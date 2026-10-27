@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chefe Limpa-Geladeira 🍳</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        chef: {
+                            green: '#2e7d32',
+                            lightGreen: '#e8f5e9',
+                            wood: '#8d6e63',
+                            woodDark: '#5d4037',
+                            cream: '#fdfbf7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        body {
+            background-color: theme('colors.chef.cream');
+            background-image: radial-gradient(theme('colors.chef.lightGreen') 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .markdown-body h1 { color: theme('colors.chef.green'); font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.2; }
+        .markdown-body h3 { color: theme('colors.chef.woodDark'); font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; border-bottom: 2px solid theme('colors.chef.lightGreen'); padding-bottom: 0.25rem; }
+        .markdown-body p { color: #4a5568; margin-bottom: 1rem; line-height: 1.6; }
+        .markdown-body ul, .markdown-body ol { margin-bottom: 1rem; padding-left: 1.5rem; color: #4a5568; }
+        .markdown-body ul { list-style-type: disc; }
+        .markdown-body ol { list-style-type: decimal; }
+        .markdown-body li { margin-bottom: 0.5rem; }
+        .markdown-body strong { color: theme('colors.chef.woodDark'); font-weight: 600; }
+        .markdown-body em { color: theme('colors.chef.green'); font-style: italic; }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800 flex items-center justify-center p-4 sm:p-6 md:p-8">
+
+    <main class="w-full max-w-2xl bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden border border-gray-100 transition-all duration-300">
+        
+        <header class="bg-chef-green text-white p-6 sm:p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTEyIDJMMiAxMmwxMCAxMCAxMC0xMFYyWiIgZmlsbD0iI0ZGRiIvPjwvc3ZnPg==')] bg-repeat background-size-40"></div>
+            <div class="relative z-10">
+                <h1 class="text-3xl sm:text-4xl font-bold mb-2 tracking-tight">Chefe Limpa-Geladeira</h1>
+                <p class="text-emerald-100 font-medium text-sm sm:text-base">Sustentabilidade e sabor com o que você já tem.</p>
+            </div>
+        </header>
+
+        <section class="p-6 sm:p-8">
+            <label for="ingredients" class="block text-sm font-semibold text-chef-woodDark mb-2">
+                O que tem na sua geladeira? (Digite ou tire foto)
+            </label>
+            
+            <div class="relative">
+                <textarea 
+                    id="ingredients" 
+                    rows="3" 
+                    class="w-full p-4 pr-14 border-2 border-gray-200 rounded-xl focus:border-chef-green focus:ring-4 focus:ring-chef-lightGreen outline-none transition-all duration-200 resize-none text-gray-700 placeholder-gray-400"
+                    placeholder="Ex: 2 ovos, meio tomate... Ou toque na câmera!"></textarea>
+                
+                <!-- Botão da Câmera -->
+                <button id="cameraBtn" class="absolute bottom-4 right-4 bg-gray-100 hover:bg-chef-lightGreen text-chef-green p-2 rounded-full transition-colors shadow-sm" title="Tirar foto da geladeira">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+                
+                <input type="file" id="imageInput" accept="image/*" capture="environment" class="hidden">
+            </div>
+
+            <div id="imagePreviewContainer" class="hidden mt-4 relative inline-block">
+                <img id="imagePreview" class="h-24 w-24 object-cover rounded-xl border-2 border-chef-green shadow-sm" src="" alt="Sua foto">
+                <button id="removeImageBtn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600 transition-colors">X</button>
+            </div>
+
+            <button 
+                id="generateBtn"
+                class="mt-6 w-full bg-chef-green hover:bg-emerald-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:bg-chef-green"
+                onclick="generateRecipe()">
+                <span id="btnText">Criar Receita Mágica</span>
+                <svg id="btnIcon" class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+                <svg id="loadingSpinner" class="hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </button>
+
+            <div id="errorMessage" class="hidden mt-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium text-center">
+            </div>
+        </section>
+
+        <section id="resultArea" class="hidden border-t border-gray-100 bg-gray-50/50 p-6 sm:p-8">
+            <div id="recipeContent" class="markdown-body opacity-0 transition-opacity duration-500">
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // A sua chave de API
+        const API_KEY = "AQ.Ab8RN6IRo7tRsLT2NvaqLlpK4VevjaQ49fBfsvY7i3GNG_QbRA"; 
+        const MODEL = "gemini-1.5-flash"; 
+
+        const SYSTEM_INSTRUCTION = `Você é o "Chefe Limpa-Geladeira", um chef sênior amigável especializado em culinária sustentável e desperdício zero.
+Sua missão é criar uma receita criativa focando PRIORITARIAMENTE nos ingredientes fornecidos pelo usuário em texto OU identificando os ingredientes na imagem que ele enviar.
+
+REGRAS ESTRITAS:
+1. Assuma que o usuário possui APENAS estes itens básicos, além do que ele digitou ou fotografou: sal, açúcar, água, óleo/azeite, pimenta, alho e cebola comuns. 
+2. Qualquer outro ingrediente extra DEVE obrigatoriamente ser marcado com a palavra "(opcional)".
+3. Validação de Comida: Se a imagem ou o texto mostrar algo não comestível (ex: detergente, sapato, lixo), recuse a receita de forma educada e bem-humorada.
+4. Formatação: Retorne a resposta ESTRITAMENTE em Markdown utilizando a seguinte estrutura exata:
+
+# 🍳 [Nome Criativo da Receita]
+*⏱️ Tempo estimado: [X] min | 👤 Rende: [Y] porções*
+
+### 🛒 Ingredientes Utilizados
+- [Ingrediente 1]
+- [Ingrediente 2] (opcional)
+
+### 👩‍🍳 Modo de Preparo
+1. [Passo 1]
+2. [Passo 2]
+
+### 💡 Dica do Chef para Desperdício Zero
+[Dica incrível sobre reaproveitamento]`;
+
+        const ingredientsInput = document.getElementById('ingredients');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        
+        const generateBtn = document.getElementById('generateBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const resultArea = document.getElementById('resultArea');
+        const recipeContent = document.getElementById('recipeContent');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let currentBase64Image = null;
+        let currentImageMimeType = null;
+
+        cameraBtn.addEventListener('click', () => {
+            imageInput.click(); 
+        });
+
+        imageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hidden');
+                    
+                    currentBase64Image = e.target.result.split(',')[1];
+                    currentImageMimeType = file.type;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        removeImageBtn.addEventListener('click', () => {
+            imagePreviewContainer.classList.add('hidden');
+            imagePreview.src = "";
+            imageInput.value = "";
+            currentBase64Image = null;
+            currentImageMimeType = null;
+        });
+
+        async function generateRecipe() {
+            const userInput = ingredientsInput.value.trim();
+            
+            if (!userInput && !currentBase64Image) {
+                showError("Por favor, digite os ingredientes ou tire uma foto da geladeira!");
+                ingredientsInput.focus();
+                return;
+            }
+
+            setLoadingState(true);
+            hideError();
+
+            try {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${API_KEY}`;
+                
+                const promptParts = [];
+                if (userInput) {
+                    promptParts.push({ text: `Os ingredientes são: ${userInput}` });
+                } else {
+                    promptParts.push({ text: `Analise esta foto da minha geladeira/despensa e crie uma receita com o que ver de comestível aí.` });
+                }
+
+                if (currentBase64Image) {
+                    promptParts.push({
+                        inlineData: {
+                            mimeType: currentImageMimeType,
+                            data: currentBase64Image
+                        }
+                    });
+                }
+
+                const payload = {
+                    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+                    contents: [{ role: "user", parts: promptParts }],
+                    generationConfig: { temperature: 0.7 }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.error?.message || 'Falha ao conectar com o Chef IA.');
+                }
+
+                const data = await response.json();
+                
+                if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+                    const markdownText = data.candidates[0].content.parts[0].text;
+                    renderRecipe(markdownText);
+                } else {
+                    throw new Error("O Chef ficou sem palavras.");
+                }
+
+            } catch (error) {
+                console.error("Erro na API:", error);
+                showError("Oops! Erro: " + error.message);
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        function renderRecipe(markdownText) {
+            const htmlContent = marked.parse(markdownText);
+            recipeContent.innerHTML = htmlContent;
+            
+            resultArea.classList.remove('hidden');
+            setTimeout(() => {
+                recipeContent.classList.remove('opacity-0');
+                recipeContent.classList.add('opacity-100');
+                resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
+
+        function setLoadingState(isLoading) {
+            generateBtn.disabled = isLoading;
+            
+            if (isLoading) {
+                btnText.textContent = "Olhando a foto e pensando...";
+                btnIcon.classList.add('hidden');
+                loadingSpinner.classList.remove('hidden');
+                recipeContent.classList.remove('opacity-100');
+                recipeContent.classList.add('opacity-0');
+            } else {
+                btnText.textContent = "Criar Receita Mágica";
+                btnIcon.classList.remove('hidden');
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+        }
+
+        function hideError() {
+            errorMessage.classList.add('hidden');
+            errorMessage.textContent = "";
+        }
+
+        ingredientsInput.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                generateRecipe();
+            }
+        });
+    </script>
+</body>
+</html>
