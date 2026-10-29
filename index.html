@@ -60,7 +60,7 @@
 <body class="min-h-screen text-gray-800 flex flex-col items-center justify-start p-4 sm:p-6 md:p-8">
 
     <!-- Container Principal -->
-    <main class="w-full max-w-3xl bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden border border-gray-100 transition-all duration-300 mb-8 relative">
+    <main class="w-full max-w-3xl bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden border border-gray-100 transition-all duration-300 mb-8 relative flex flex-col min-h-[85vh] sm:min-h-[600px]">
         
         <!-- Loading Overlay -->
         <div id="globalLoading" class="hidden absolute inset-0 bg-white/90 z-50 flex flex-col items-center justify-center backdrop-blur-sm transition-opacity">
@@ -68,8 +68,8 @@
             <p class="font-bold text-chef-green">Carregando...</p>
         </div>
 
-        <!-- Cabeçalho -->
-        <header class="bg-chef-green text-white p-6 sm:p-8 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- Cabeçalho (Oculto na Boas-Vindas) -->
+        <header id="mainHeader" class="hidden bg-chef-green text-white p-6 sm:p-8 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="text-center sm:text-left z-10">
                 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight cursor-pointer" onclick="window.showView('input')">Chefe Limpa-Geladeira 🍳</h1>
                 <p class="text-emerald-100 font-medium text-xs sm:text-sm mt-1">Sua conta inteligente de receitas!</p>
@@ -80,7 +80,6 @@
                     <span class="text-xl">👤</span>
                     <span class="text-xs sm:text-sm font-semibold hidden sm:inline">Conta</span>
                 </button>
-                <!-- Botão Admin oculto por padrão -->
                 <button id="devHeaderBtn" onclick="window.showView('dev')" class="hidden bg-purple-600 hover:bg-purple-700 border border-purple-400/40 text-white px-4 py-2.5 rounded-2xl flex items-center gap-2 transition-all shadow-sm active:scale-95">
                     <span class="text-xl">👑</span>
                     <span class="text-xs sm:text-sm font-semibold hidden sm:inline">Admin</span>
@@ -99,8 +98,45 @@
             <span id="toastText">Ação realizada!</span>
         </div>
 
-        <!-- VISTA 0: PERFIL E LOGIN -->
-        <section id="profileView" class="hidden p-6 sm:p-8 bg-gray-50/50">
+        <!-- ============================================== -->
+        <!-- VISTA 0: TELA DE BOAS-VINDAS (STARTUP)         -->
+        <!-- ============================================== -->
+        <section id="welcomeView" class="hidden flex-1 flex flex-col items-center justify-center p-6 sm:p-8 bg-chef-green text-white relative overflow-hidden">
+            <!-- Decoração de fundo -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(white 2px, transparent 2px); background-size: 30px 30px;"></div>
+            
+            <div class="z-10 text-center mb-8">
+                <span class="text-6xl md:text-7xl block mb-6 animate-bounce shadow-xl rounded-full bg-white/20 p-4 inline-block backdrop-blur-sm border border-white/30">🍳</span>
+                <h1 class="text-3xl sm:text-4xl font-bold mb-2 tracking-tight">Chefe Limpa-Geladeira</h1>
+                <p class="text-emerald-100 text-sm sm:text-base max-w-xs mx-auto">Transforme os ingredientes esquecidos em pratos incríveis.</p>
+            </div>
+
+            <div class="z-10 w-full max-w-sm bg-white p-6 sm:p-8 rounded-3xl text-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
+                <h2 class="text-lg font-bold text-center mb-5 text-chef-woodDark">Acesse sua cozinha</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">E-mail ou Nome</label>
+                    <input type="text" id="welcomeEmail" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-chef-green focus:bg-white outline-none transition-all text-sm" placeholder="seu@email.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-600 mb-1">Senha</label>
+                    <input type="password" id="welcomePassword" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-chef-green focus:bg-white outline-none transition-all text-sm" placeholder="••••••••">
+                </div>
+                
+                <div class="flex flex-col gap-3">
+                    <button onclick="window.login('welcomeEmail', 'welcomePassword')" class="w-full bg-chef-green text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors shadow-md text-sm">Entrar / Criar Conta</button>
+                </div>
+            </div>
+
+            <button onclick="window.enterGuestMode()" class="z-10 mt-8 text-emerald-100 text-sm font-semibold hover:text-white hover:underline transition-all flex items-center gap-2 bg-black/10 px-5 py-2.5 rounded-full backdrop-blur-md">
+                <span>👀</span> Modo Visitante (Não Salva)
+            </button>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISTA 1: PERFIL / CONTA LOGADA                 -->
+        <!-- ============================================== -->
+        <section id="profileView" class="hidden p-6 sm:p-8 bg-gray-50/50 flex-1">
             <div class="flex items-center justify-between mb-6 border-b pb-4">
                 <h2 class="text-xl sm:text-2xl font-bold text-chef-woodDark flex items-center gap-2">
                     <span>👤</span> Minha Conta
@@ -112,7 +148,7 @@
 
             <!-- Div Logado -->
             <div id="loggedInState" class="hidden text-center py-8">
-                <div class="w-20 h-20 bg-chef-lightGreen text-chef-green rounded-full mx-auto flex items-center justify-center text-4xl mb-4 font-bold shadow-inner">
+                <div class="w-24 h-24 bg-chef-lightGreen text-chef-green rounded-full mx-auto flex items-center justify-center text-5xl mb-4 font-bold shadow-inner border-4 border-white">
                     <span id="userInitial">C</span>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-1">Bem-vindo(a)!</h3>
@@ -125,12 +161,12 @@
                 </button>
             </div>
 
-            <!-- Div Não Logado -->
-            <div id="loggedOutState" class="max-w-md mx-auto">
+            <!-- Div Não Logado (Visitante querendo criar conta) -->
+            <div id="loggedOutState" class="max-w-md mx-auto hidden">
                 <div class="text-center mb-6">
-                    <span class="text-4xl block mb-2">📱</span>
-                    <h3 class="font-bold text-lg text-gray-800">Crie seu Perfil Local</h3>
-                    <p class="text-xs text-gray-500 mt-1">Simule uma conta para salvar seus favoritos neste aparelho ou use o acesso Dev.</p>
+                    <span class="text-4xl block mb-2">👀</span>
+                    <h3 class="font-bold text-lg text-gray-800">Você está como Visitante</h3>
+                    <p class="text-xs text-gray-500 mt-1">Crie uma conta local agora para salvar seus pratos favoritos e receber recomendações da IA.</p>
                 </div>
 
                 <div class="bg-white p-6 rounded-3xl border shadow-sm">
@@ -139,20 +175,18 @@
                         <input type="text" id="authEmail" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-chef-green outline-none transition-all" placeholder="seu@email.com">
                     </div>
                     <div class="mb-6">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Senha (Opcional)</label>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Senha</label>
                         <input type="password" id="authPassword" class="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-chef-green outline-none transition-all" placeholder="Sua senha">
                     </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="window.login()" class="flex-1 bg-chef-lightGreen text-chef-green font-bold py-3 rounded-xl hover:bg-emerald-100 transition-colors">Entrar</button>
-                        <button onclick="window.login()" class="flex-1 bg-chef-green text-white font-bold py-3 rounded-xl hover:bg-emerald-800 transition-colors shadow-md">Criar Conta</button>
-                    </div>
+                    <button onclick="window.login('authEmail', 'authPassword')" class="w-full bg-chef-green text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors shadow-md">Criar Conta e Salvar</button>
                 </div>
             </div>
         </section>
 
-        <!-- VISTA 1: ENTRADA PRINCIPAL -->
-        <section id="inputView" class="p-6 sm:p-8">
+        <!-- ============================================== -->
+        <!-- VISTA 2: ENTRADA DE INGREDIENTES               -->
+        <!-- ============================================== -->
+        <section id="inputView" class="hidden p-6 sm:p-8 flex-1">
             <div class="flex items-center justify-between mb-2">
                 <label for="ingredients" class="block text-sm font-semibold text-chef-woodDark">
                     O que tem na sua geladeira? (Digite ou tire foto)
@@ -202,8 +236,10 @@
             <div id="errorMessage" class="hidden mt-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-2xl text-sm font-medium text-center"></div>
         </section>
 
-        <!-- VISTA 2: LISTA DE RECEITAS -->
-        <section id="optionsView" class="hidden p-6 sm:p-8 bg-gray-50/50">
+        <!-- ============================================== -->
+        <!-- VISTA 3: LISTA DE RECEITAS                     -->
+        <!-- ============================================== -->
+        <section id="optionsView" class="hidden p-6 sm:p-8 bg-gray-50/50 flex-1">
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h2 class="text-xl sm:text-2xl font-bold text-chef-woodDark">7 Opções do Chefe</h2>
@@ -219,8 +255,10 @@
             </div>
         </section>
 
-        <!-- VISTA 3: DETALHES -->
-        <section id="detailView" class="hidden p-6 sm:p-8">
+        <!-- ============================================== -->
+        <!-- VISTA 4: DETALHES DA RECEITA                   -->
+        <!-- ============================================== -->
+        <section id="detailView" class="hidden p-6 sm:p-8 flex-1">
             <div class="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
                 <button onclick="window.goBackFromDetail()" class="text-xs sm:text-sm font-semibold text-chef-green hover:underline flex items-center gap-1">
                     ← Voltar
@@ -233,8 +271,10 @@
             <div id="detailContent"></div>
         </section>
 
-        <!-- VISTA 4: FAVORITOS -->
-        <section id="savedView" class="hidden p-6 sm:p-8 bg-gray-50/50">
+        <!-- ============================================== -->
+        <!-- VISTA 5: FAVORITOS                             -->
+        <!-- ============================================== -->
+        <section id="savedView" class="hidden p-6 sm:p-8 bg-gray-50/50 flex-1">
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h2 class="text-xl sm:text-2xl font-bold text-chef-woodDark flex items-center gap-2">
@@ -273,44 +313,129 @@
             </div>
         </section>
 
-        <!-- VISTA 5: PAINEL DO ADMINISTRADOR -->
-        <section id="devView" class="hidden p-6 sm:p-8 bg-gray-900 text-purple-400 font-mono">
+        <!-- ============================================== -->
+        <!-- VISTA 6: PAINEL DO ADMINISTRADOR               -->
+        <!-- ============================================== -->
+        <section id="devView" class="hidden p-6 sm:p-8 bg-gray-900 text-purple-400 font-mono flex-1">
             <div class="flex items-center justify-between mb-6 border-b border-purple-800 pb-4">
                 <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white">
-                    <span>👑</span> Painel do Proprietário
+                    <span>👑</span> Painel Admin
                 </h2>
                 <button onclick="window.showView('input')" class="text-sm font-bold hover:text-white transition-colors">
-                    [ Voltar ao App ]
+                    [ Sair do Admin ]
                 </button>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                 <!-- Modo Teste -->
-                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm">
-                    <h3 class="text-white font-bold mb-2">⚡ Modo Teste (Evita Gastos de API)</h3>
-                    <p class="text-xs text-gray-400 mb-4">Gera receitas falsas instantaneamente para você testar o visual do aplicativo sem utilizar sua cota do Google.</p>
-                    <button onclick="window.toggleMockMode()" id="mockModeBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold text-sm transition-all border border-gray-600">
-                        ⚪ Teste: DESATIVADO
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-white font-bold mb-2 text-sm">⚡ Modo Teste</h3>
+                        <p class="text-xs text-gray-400 mb-4">Gera receitas falsas na hora sem gastar cota da API.</p>
+                    </div>
+                    <button onclick="window.toggleMockMode()" id="mockModeBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-gray-600">
+                        ⚪ DESATIVADO
+                    </button>
+                </div>
+                
+                <!-- Ver Usuários -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-white font-bold mb-2 text-sm">👥 Usuários</h3>
+                        <p class="text-xs text-gray-400 mb-4">Lista os e-mails de quem já se cadastrou aqui.</p>
+                    </div>
+                    <button onclick="window.viewAdminUsers()" class="bg-blue-700 hover:bg-blue-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-blue-500">
+                        Listar Cadastrados ↓
+                    </button>
+                </div>
+
+                <!-- Ver Feedbacks -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-white font-bold mb-2 text-sm">💡 Feedbacks</h3>
+                        <p class="text-xs text-gray-400 mb-4">Veja as mensagens deixadas na aba de ideias.</p>
+                    </div>
+                    <button onclick="window.viewAdminFeedbacks()" class="bg-purple-700 hover:bg-purple-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-purple-500">
+                        Ler Mensagens ↓
                     </button>
                 </div>
             </div>
             
             <div class="bg-black p-4 rounded-xl border border-gray-700 h-48 overflow-y-auto">
                 <h3 class="text-white font-bold mb-2 text-xs">LOG DO SERVIDOR ADMIN</h3>
-                <pre id="devLog" class="text-xs text-purple-300 whitespace-pre-wrap">Sistema Admin iniciado no modo LocalStorage...</pre>
+                <pre id="devLog" class="text-xs text-purple-300 whitespace-pre-wrap">Sistema Admin iniciado...</pre>
             </div>
         </section>
 
+        <!-- ============================================== -->
+        <!-- VISTA 7: SUPORTE (CHATBOT)                     -->
+        <!-- ============================================== -->
+        <section id="supportView" class="hidden p-6 sm:p-8 flex-1 flex flex-col">
+            <div class="flex items-center justify-between border-b pb-4 mb-4">
+                <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-chef-woodDark">
+                    <span>🧑‍💻</span> Suporte do Chefe
+                </h2>
+                <p class="text-xs text-gray-500 hidden sm:block">Estamos aqui para ajudar!</p>
+            </div>
+            
+            <div id="chatHistory" class="flex-1 overflow-y-auto space-y-3 mb-4 pr-2 flex flex-col">
+                <!-- Chat começa aqui via JS -->
+            </div>
+            
+            <div class="relative mt-auto">
+                <input type="text" id="supportInput" class="w-full bg-gray-100 border border-transparent focus:border-chef-green focus:bg-white focus:ring-0 rounded-full py-3.5 pl-5 pr-14 text-sm shadow-inner transition-all" placeholder="Pergunte qualquer coisa!" onkeydown="if(event.key === 'Enter') window.sendSupportMessage()">
+                <button onclick="window.sendSupportMessage()" class="absolute right-2 top-1.5 p-2 bg-chef-green text-white rounded-full hover:bg-emerald-800 transition-colors shadow-md">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VISTA 8: FEEDBACK                              -->
+        <!-- ============================================== -->
+        <section id="feedbackView" class="hidden p-6 sm:p-8 flex-1 flex flex-col items-center justify-center bg-gray-50/50">
+            <div class="text-center mb-8">
+                <span class="text-5xl block mb-4">💡</span>
+                <h2 class="text-2xl font-bold text-chef-woodDark">Ajude a Inovar!</h2>
+                <p class="text-sm text-gray-500 mt-2 max-w-xs mx-auto">O que você achou do aplicativo? Tem alguma ideia nova ou achou um bug?</p>
+            </div>
+            
+            <div class="w-full max-w-sm bg-white p-6 rounded-3xl border border-gray-200 shadow-sm">
+                <textarea id="feedbackText" rows="4" class="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-chef-green outline-none resize-none text-sm text-gray-700 placeholder-gray-400 mb-4" placeholder="Escreva sua sugestão incrível aqui..."></textarea>
+                <button onclick="window.submitFeedback()" class="w-full bg-chef-green text-white font-bold py-3.5 rounded-xl hover:bg-emerald-800 transition-colors shadow-md text-sm">
+                    Enviar Feedback
+                </button>
+            </div>
+        </section>
+
+        <!-- NAVEGAÇÃO INFERIOR (Oculta na Boas-Vindas) -->
+        <nav id="bottomNav" class="hidden sticky bottom-0 w-full bg-white border-t border-gray-100 flex justify-around p-2 z-40">
+            <button onclick="window.showView('input')" id="navBtn-input" class="flex-1 py-2 flex flex-col items-center gap-1 text-chef-green hover:bg-emerald-50 rounded-xl transition-colors">
+                <span class="text-2xl">📝</span>
+                <span class="text-[10px] font-bold uppercase tracking-wide">Criar</span>
+            </button>
+            <button onclick="window.showView('support')" id="navBtn-support" class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-chef-green hover:bg-emerald-50 rounded-xl transition-colors">
+                <span class="text-2xl">🎧</span>
+                <span class="text-[10px] font-bold uppercase tracking-wide">Suporte</span>
+            </button>
+            <button onclick="window.showView('feedback')" id="navBtn-feedback" class="flex-1 py-2 flex flex-col items-center gap-1 text-gray-400 hover:text-chef-green hover:bg-emerald-50 rounded-xl transition-colors">
+                <span class="text-2xl">💡</span>
+                <span class="text-[10px] font-bold uppercase tracking-wide">Ideias</span>
+            </button>
+        </nav>
+
     </main>
 
-    <!-- MOTOR DO APLICATIVO (SEM FIREBASE, 100% LOCAL) -->
     <script>
         // CHAVE DA INTELIGÊNCIA ARTIFICIAL (GEMINI)
         const GEMINI_API_KEY = "AQ.Ab8RN6LYaC0ZhWaUlf72iVsn4Pk87r5v2daFebg2Byysvud5iA";
 
         // Estado Global
         window.currentUserEmail = localStorage.getItem('chefe_user_email') || null;
+        window.isGuest = sessionStorage.getItem('chefe_guest') === 'true';
         window.savedRecipesLocal = JSON.parse(localStorage.getItem('chefe_saved_recipes') || '[]'); 
+        window.feedbacksList = JSON.parse(localStorage.getItem('chefe_feedbacks') || '[]');
+        window.allUsersList = JSON.parse(localStorage.getItem('chefe_all_users') || '[]');
         
         window.currentRecipesList = []; 
         window.selectedRecipe = null;
@@ -332,20 +457,40 @@
         };
 
         // ==========================================
-        // 1. SISTEMA DE AUTENTICAÇÃO FAKE (LOCAL)
+        // 1. SISTEMA DE AUTENTICAÇÃO E INÍCIO
         // ==========================================
 
-        window.login = () => {
-            const email = document.getElementById('authEmail').value.trim();
-            const pass = document.getElementById('authPassword').value;
+        window.onload = () => {
+            if (window.currentUserEmail || window.isGuest) {
+                window.showView('input'); 
+                window.updateProfileUI();
+            } else {
+                window.showView('welcome'); 
+            }
+            window.updateSavedBadge();
+        };
+
+        window.enterGuestMode = () => {
+            sessionStorage.setItem('chefe_guest', 'true');
+            window.isGuest = true;
+            window.showToast("Modo Visitante. Receitas não serão salvas.", "👀");
+            window.updateProfileUI();
+            window.showView('input');
+        };
+
+        window.login = (emailInputId, passInputId) => {
+            const email = document.getElementById(emailInputId).value.trim();
+            const pass = document.getElementById(passInputId).value;
             if(!email) return window.showToast("Preencha um nome ou e-mail", "⚠️");
             
-            // BYPASS DO DONO DO SITE (Suas credenciais secretas)
+            // BYPASS DO DONO DO SITE (Suas credenciais secretas: dev@chefe.com / admin)
             if(email === 'dev@chefe.com' && pass === 'admin') {
                 window.isDevMode = true;
                 window.currentUserEmail = 'Proprietário (Admin)';
+                window.isGuest = false;
                 localStorage.setItem('chefe_is_dev', 'true');
                 localStorage.setItem('chefe_user_email', 'Proprietário (Admin)');
+                sessionStorage.removeItem('chefe_guest');
                 window.updateProfileUI();
                 window.showToast("PAINEL ADMIN ATIVADO", "👑");
                 window.showView('dev');
@@ -354,56 +499,112 @@
 
             // Login Comum Local
             window.currentUserEmail = email;
+            window.isGuest = false;
             localStorage.setItem('chefe_user_email', email);
+            sessionStorage.removeItem('chefe_guest');
+            
+            // Salva o usuário no "Banco de Dados" Local para o Admin conseguir ver
+            if(!window.allUsersList.includes(email)) {
+                window.allUsersList.push(email);
+                localStorage.setItem('chefe_all_users', JSON.stringify(window.allUsersList));
+            }
+
             window.updateProfileUI();
             window.showToast("Perfil salvo neste aparelho!", "✅");
             window.showView('input');
+            
+            document.getElementById(emailInputId).value = '';
+            document.getElementById(passInputId).value = '';
         };
 
         window.logout = () => {
             window.isDevMode = false;
             window.currentUserEmail = null;
+            window.isGuest = false;
             localStorage.removeItem('chefe_is_dev');
             localStorage.removeItem('chefe_user_email');
+            sessionStorage.removeItem('chefe_guest');
             window.updateProfileUI();
             window.showToast("Você saiu do perfil.", "👋");
+            window.showView('welcome');
         };
 
         window.updateProfileUI = () => {
             const loggedInState = document.getElementById('loggedInState');
             const loggedOutState = document.getElementById('loggedOutState');
+            
             if (window.currentUserEmail) {
                 loggedInState.classList.remove('hidden');
                 loggedOutState.classList.add('hidden');
                 document.getElementById('userEmailDisplay').textContent = window.currentUserEmail;
                 document.getElementById('userInitial').textContent = window.currentUserEmail.charAt(0).toUpperCase();
                 
-                if(window.isDevMode) {
-                    document.getElementById('devHeaderBtn').classList.remove('hidden');
-                } else {
-                    document.getElementById('devHeaderBtn').classList.add('hidden');
-                }
-            } else {
+                if(window.isDevMode) document.getElementById('devHeaderBtn').classList.remove('hidden');
+                else document.getElementById('devHeaderBtn').classList.add('hidden');
+            } else if (window.isGuest) {
                 loggedInState.classList.add('hidden');
-                loggedOutState.classList.remove('hidden');
+                loggedOutState.classList.remove('hidden'); 
                 document.getElementById('devHeaderBtn').classList.add('hidden');
             }
         };
 
         // ==========================================
-        // 2. FUNÇÕES DO PAINEL ADMIN
+        // 2. FUNÇÕES DE FEEDBACK & ADMIN
         // ==========================================
+        
+        window.submitFeedback = () => {
+            const textEl = document.getElementById('feedbackText');
+            const msg = textEl.value.trim();
+            if(!msg) return window.showToast("Escreva algo antes de enviar!", "⚠️");
+            
+            const novoFeedback = { 
+                autor: window.currentUserEmail || 'Visitante',
+                texto: msg,
+                data: new Date().toLocaleDateString()
+            };
+            
+            window.feedbacksList.push(novoFeedback);
+            localStorage.setItem('chefe_feedbacks', JSON.stringify(window.feedbacksList));
+            
+            textEl.value = '';
+            window.showToast("Ideia enviada com sucesso!", "🚀");
+            window.showView('input');
+        };
+        
+        // ADMIN - Ver Feedbacks
+        window.viewAdminFeedbacks = () => {
+            if(window.feedbacksList.length === 0) {
+                window.devLog("Nenhum feedback recebido ainda.");
+                return;
+            }
+            window.devLog(`Carregando ${window.feedbacksList.length} feedbacks:`);
+            window.feedbacksList.forEach((f, i) => {
+                window.devLog(`[#${i+1} - ${f.autor}] ${f.texto}`);
+            });
+        };
+
+        // ADMIN - Ver Usuários
+        window.viewAdminUsers = () => {
+            if(window.allUsersList.length === 0) {
+                window.devLog("Nenhum usuário cadastrado no sistema local ainda.");
+                return;
+            }
+            window.devLog(`Listando ${window.allUsersList.length} conta(s) registrada(s):`);
+            window.allUsersList.forEach((email, i) => {
+                window.devLog(`[User #${i+1}] E-mail: ${email}`);
+            });
+        };
 
         window.toggleMockMode = () => {
             window.mockMode = !window.mockMode;
             const btn = document.getElementById('mockModeBtn');
             if(window.mockMode) {
-                btn.className = "bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold text-sm transition-all border border-green-400 shadow-[0_0_10px_rgba(34,197,94,0.5)]";
-                btn.textContent = "🟢 Teste: ATIVADO (Rápido)";
+                btn.className = "bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-green-400 shadow-[0_0_10px_rgba(34,197,94,0.5)]";
+                btn.textContent = "🟢 ATIVADO (Rápido)";
                 window.devLog("Modo Teste ATIVADO. Geração não gastará cota da API.");
             } else {
-                btn.className = "bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded font-bold text-sm transition-all border border-gray-600";
-                btn.textContent = "⚪ Teste: DESATIVADO";
+                btn.className = "bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-gray-600";
+                btn.textContent = "⚪ DESATIVADO";
                 window.devLog("Modo Teste DESATIVADO.");
             }
         };
@@ -413,11 +614,18 @@
         // ==========================================
 
         window.saveRecipeToLocal = (recipe) => {
+            if(window.isGuest && !window.currentUserEmail) {
+                window.showToast("Crie uma conta em 👤 'Conta' para salvar!", "⚠️");
+                return false; 
+            }
+            
             if(!window.isRecipeSaved(recipe.title)) {
                 window.savedRecipesLocal.push(recipe);
                 localStorage.setItem('chefe_saved_recipes', JSON.stringify(window.savedRecipesLocal));
                 window.updateSavedBadge();
+                return true;
             }
+            return false;
         };
 
         window.removeRecipeFromLocal = (title) => {
@@ -431,8 +639,8 @@
         window.updateSavedBadge = () => {
             document.getElementById('savedBadge').textContent = window.savedRecipesLocal.length;
             const recSection = document.getElementById('recommendationsSection');
-            if (window.savedRecipesLocal.length > 0) recSection.classList.remove('hidden');
-            else recSection.classList.add('hidden');
+            if (window.savedRecipesLocal.length > 0) recSection?.classList.remove('hidden');
+            else recSection?.classList.add('hidden');
         };
 
         // ==========================================
@@ -442,8 +650,31 @@
         window.showView = (viewId) => {
             document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
             document.getElementById(viewId + 'View').classList.remove('hidden');
+            
+            const header = document.getElementById('mainHeader');
+            const bottomNav = document.getElementById('bottomNav');
+            
+            if(viewId === 'welcome') {
+                header.classList.add('hidden');
+                bottomNav.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+                bottomNav.classList.remove('hidden');
+            }
+
             if (viewId === 'input') window.unlockInput();
             else if (viewId === 'saved') window.renderSavedRecipes();
+            else if (viewId === 'support' && window.chatHistory.length === 0) window.initChat();
+
+            if(viewId !== 'welcome') {
+                ['input', 'support', 'feedback'].forEach(tab => {
+                    const btn = document.getElementById(`navBtn-${tab}`);
+                    if(btn) {
+                        if(tab === viewId) btn.classList.replace('text-gray-400', 'text-chef-green');
+                        else btn.classList.replace('text-chef-green', 'text-gray-400');
+                    }
+                });
+            }
         };
 
         window.showToast = (message, icon = "⭐") => {
@@ -508,24 +739,88 @@
         };
 
         // ==========================================
+        // 4.5 MOTOR DE SUPORTE (CHATBOT)
+        // ==========================================
+        window.chatHistory = [];
+
+        window.initChat = () => {
+            window.chatHistory = [{ role: "model", parts: [{ text: "Olá! Sou o assistente de suporte do Chefe Limpa-Geladeira. Como posso te ajudar a usar o aplicativo hoje?" }] }];
+            window.renderChat();
+        };
+
+        window.sendSupportMessage = async () => {
+            const inputEl = document.getElementById('supportInput');
+            const msg = inputEl.value.trim();
+            if(!msg) return;
+            
+            inputEl.value = '';
+            window.chatHistory.push({ role: "user", parts: [{ text: msg }] });
+            window.renderChat();
+            
+            const chatContainer = document.getElementById('chatHistory');
+            const typingId = "typing-" + Date.now();
+            chatContainer.innerHTML += `<div id="${typingId}" class="bg-emerald-50 text-emerald-900 p-3 rounded-2xl rounded-tl-sm text-sm w-[85%] self-start animate-pulse">Digitando...</div>`;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            const SYSTEM_PROMPT_SUPPORT = `Você é o assistente de suporte do aplicativo 'Chefe Limpa-Geladeira'. Responda de forma amigável, curta e direta. 
+            REGRA DE OURO (MÁXIMA PRIORIDADE): SE o usuário pedir para gerar uma receita, pedir ideias de comida, pratos, ou listar ingredientes, VOCÊ NÃO DEVE INVENTAR RECEITAS AQUI.
+            Responda exatamente: "Para criar receitas e mágicas na cozinha, por favor, clique no botão 'Criar' 📝 no menu logo aqui embaixo! Lá você pode digitar seus ingredientes ou tirar uma foto da geladeira."`;
+            
+            let apiContents = window.chatHistory.slice(1);
+            if(apiContents.length > 0 && apiContents[0].role === 'model') apiContents.shift();
+
+            const payload = {
+                systemInstruction: { parts: [{ text: SYSTEM_PROMPT_SUPPORT }] },
+                contents: apiContents,
+                generationConfig: { temperature: 0.5 }
+            };
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY.trim()}`;
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+
+                document.getElementById(typingId)?.remove();
+                if (response.ok) {
+                    const data = await response.json();
+                    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não entendi muito bem.";
+                    window.chatHistory.push({ role: "model", parts: [{ text: reply }] });
+                } else {
+                    window.chatHistory.push({ role: "model", parts: [{ text: "Oops, tive um problema de sistema. Tente novamente mais tarde!" }] });
+                }
+            } catch (err) {
+                document.getElementById(typingId)?.remove();
+                window.chatHistory.push({ role: "model", parts: [{ text: "Sem conexão com a internet." }] });
+            }
+            window.renderChat();
+        };
+
+        window.renderChat = () => {
+            const chatContainer = document.getElementById('chatHistory');
+            chatContainer.innerHTML = '';
+            
+            window.chatHistory.forEach(msg => {
+                const isUser = msg.role === 'user';
+                chatContainer.innerHTML += `
+                    <div class="p-3.5 text-sm w-[85%] shadow-sm flex flex-col leading-relaxed ${isUser ? 'ml-auto self-end bg-chef-green text-white rounded-2xl rounded-tr-sm' : 'bg-emerald-50 text-emerald-900 rounded-2xl rounded-tl-sm self-start'}">
+                        ${msg.parts[0].text}
+                    </div>
+                `;
+            });
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        };
+
+        // ==========================================
         // 5. MOTOR DA IA (GERAÇÃO DE RECEITAS)
         // ==========================================
         
-        const SYSTEM_INSTRUCTION = `Você é o "Chefe Limpa-Geladeira".
-        Gere 7 opções de receitas.
+        const SYSTEM_INSTRUCTION = `Você é o "Chefe Limpa-Geladeira". Gere 7 opções de receitas.
         REGRAS RÍGIDAS DE SAÍDA: Retorne ESTRITAMENTE um array JSON válido.
         Exemplo:
         [
           {
-            "title": "Ovo Mexido",
-            "emoji": "🍳",
-            "time": "15 min",
-            "servings": "2 porções",
-            "description": "Textura macia do ovo.",
-            "wikiTopic": "Scrambled eggs",
-            "ingredients": ["2 ovos"],
-            "instructions": ["Bata os ovos."],
-            "tip": "Adicione sal!"
+            "title": "Ovo Mexido", "emoji": "🍳", "time": "15 min", "servings": "2 porções",
+            "description": "Textura macia do ovo.", "wikiTopic": "Scrambled eggs",
+            "ingredients": ["2 ovos"], "instructions": ["Bata os ovos."], "tip": "Adicione sal!"
           }
         ]
         OBSERVAÇÃO CRÍTICA: O campo 'wikiTopic' DEVE SER EXATAMENTE O TÍTULO DE UM ARTIGO EM INGLÊS DA WIKIPEDIA de um prato real. Ex: "Scrambled eggs", "Pancake", "Cake".`;
@@ -609,7 +904,6 @@
             window.unlockInput();
         };
 
-        // Motor Analítico de Recomendações
         window.generateRecommendations = async () => {
             const btn = document.getElementById('generateRecsBtn');
             const txt = document.getElementById('recsBtnText');
@@ -648,9 +942,7 @@
                         txt.textContent = "Pronto! Veja abaixo:";
                     }
                 }
-            } catch (err) {
-                txt.textContent = "Erro na IA. Tentar novamente";
-            }
+            } catch (err) {}
             spin.classList.add('hidden');
             btn.disabled = false;
         };
@@ -664,17 +956,11 @@
                 const card = document.createElement('div');
                 card.className = 'bg-amber-50 rounded-3xl border border-amber-200/50 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-all';
                 card.innerHTML = `
-                    <div class="relative">
-                        <div id="rec-img-container-${index}" class="w-full h-32 rounded-t-3xl skeleton-loader flex items-center justify-center text-gray-400 text-xs">📸</div>
-                    </div>
+                    <div class="relative"><div id="rec-img-container-${index}" class="w-full h-32 rounded-t-3xl skeleton-loader flex items-center justify-center text-gray-400 text-xs">📸</div></div>
                     <div class="p-4 flex-1 flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-lg mb-2 inline-block">🎯 Combina com você</span>
-                            <h3 class="font-bold text-gray-800 text-sm leading-tight mb-2">${recipe.title}</h3>
-                        </div>
+                        <div><span class="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-lg mb-2 inline-block">🎯 Combina com você</span><h3 class="font-bold text-gray-800 text-sm leading-tight mb-2">${recipe.title}</h3></div>
                         <button onclick="window.openRecipeDetail(${index}, 'recommended')" class="w-full mt-3 bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold py-2 rounded-xl text-xs transition-colors">Ver Receita</button>
-                    </div>
-                `;
+                    </div>`;
                 grid.appendChild(card);
             });
         };
@@ -687,9 +973,7 @@
                 const data = await response.json();
                 const pages = data.query.pages;
                 const pageId = Object.keys(pages)[0];
-                if (pageId !== "-1" && pages[pageId].thumbnail) {
-                    return pages[pageId].thumbnail.source;
-                }
+                if (pageId !== "-1" && pages[pageId].thumbnail) return pages[pageId].thumbnail.source;
             } catch (e) {}
             return `https://placehold.co/600x400/e8f5e9/2e7d32?text=${encodeURIComponent(fallbackText.substring(0, 20))}`;
         }
@@ -715,25 +999,12 @@
                 const saved = window.isRecipeSaved(recipe.title);
                 const card = document.createElement('div');
                 card.className = 'bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden p-4 sm:p-5';
-                
                 const imageSection = recipe.imageUrl ? `<img src="${recipe.imageUrl}" class="w-full h-44 object-cover rounded-2xl shadow-sm mb-4" />` : `<div id="recipe-img-container-${index}" class="w-full h-44 rounded-2xl skeleton-loader mb-4 flex items-center justify-center text-2xl">📸</div>`;
-
                 card.innerHTML = `
-                    <div>
-                        <div class="relative">
-                            ${imageSection}
-                            <button onclick="window.toggleSaveRecipe(${index}, 'options', event)" class="absolute top-3 right-3 p-2.5 rounded-2xl backdrop-blur-md transition-all shadow-md ${saved ? 'bg-yellow-400 text-gray-900 font-bold' : 'bg-white/80 hover:bg-white text-gray-700'}">
-                                <span>${saved ? '★' : '☆'}</span>
-                            </button>
-                        </div>
-                        <div class="flex gap-2 text-xs text-emerald-700 bg-emerald-50 w-fit px-3 py-1 rounded-full font-semibold mb-2">
-                            <span>⏱️ ${recipe.time}</span><span>•</span><span>👤 ${recipe.servings}</span>
-                        </div>
-                        <h3 class="font-bold text-gray-800 text-lg mb-1 leading-snug">${recipe.title}</h3>
-                        <p class="text-xs text-gray-600 line-clamp-3 mb-3 leading-relaxed">${recipe.description || ''}</p>
-                    </div>
-                    <button onclick="window.openRecipeDetail(${index}, 'options')" class="w-full mt-2 bg-chef-green hover:bg-emerald-800 text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-sm">Ver Preparo</button>
-                `;
+                    <div><div class="relative">${imageSection}<button onclick="window.toggleSaveRecipe(${index}, 'options', event)" class="absolute top-3 right-3 p-2.5 rounded-2xl backdrop-blur-md transition-all shadow-md ${saved ? 'bg-yellow-400 text-gray-900 font-bold' : 'bg-white/80 hover:bg-white text-gray-700'}"><span>${saved ? '★' : '☆'}</span></button></div>
+                    <div class="flex gap-2 text-xs text-emerald-700 bg-emerald-50 w-fit px-3 py-1 rounded-full font-semibold mb-2"><span>⏱️ ${recipe.time}</span><span>•</span><span>👤 ${recipe.servings}</span></div>
+                    <h3 class="font-bold text-gray-800 text-lg mb-1 leading-snug">${recipe.title}</h3><p class="text-xs text-gray-600 line-clamp-3 mb-3 leading-relaxed">${recipe.description || ''}</p></div>
+                    <button onclick="window.openRecipeDetail(${index}, 'options')" class="w-full mt-2 bg-chef-green hover:bg-emerald-800 text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-sm">Ver Preparo</button>`;
                 grid.appendChild(card);
             });
         };
@@ -741,24 +1012,16 @@
         window.renderSavedRecipes = () => {
             const grid = document.getElementById('savedGrid');
             grid.innerHTML = '';
-            if (window.savedRecipesLocal.length === 0) {
-                document.getElementById('emptySaved').classList.remove('hidden');
-            } else {
+            if (window.savedRecipesLocal.length === 0) document.getElementById('emptySaved').classList.remove('hidden');
+            else {
                 document.getElementById('emptySaved').classList.add('hidden');
                 window.savedRecipesLocal.forEach((recipe, index) => {
                     const card = document.createElement('div');
                     card.className = 'bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden p-4 sm:p-5';
                     card.innerHTML = `
-                        <div>
-                            <div class="relative">
-                                <img src="${recipe.imageUrl}" class="w-full h-44 object-cover rounded-2xl shadow-sm mb-4" />
-                                <button onclick="window.removeSavedAndRefresh('${recipe.title.replace(/'/g, "\\'")}')" class="absolute top-3 right-3 p-2 rounded-xl bg-red-500/90 text-white text-xs hover:bg-red-600 shadow-md">🗑️</button>
-                            </div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">${recipe.title}</h3>
-                            <p class="text-xs text-gray-500 mb-4 font-medium">⏱️ ${recipe.time} • 👤 ${recipe.servings}</p>
-                        </div>
-                        <button onclick='window.openRecipeDetail(${JSON.stringify(recipe).replace(/'/g, "&apos;")}, "saved")' class="w-full bg-chef-green text-white font-bold py-3 rounded-2xl text-sm">Ver Modo de Preparo</button>
-                    `;
+                        <div><div class="relative"><img src="${recipe.imageUrl}" class="w-full h-44 object-cover rounded-2xl shadow-sm mb-4" /><button onclick="window.removeSavedAndRefresh('${recipe.title.replace(/'/g, "\\'")}')" class="absolute top-3 right-3 p-2 rounded-xl bg-red-500/90 text-white text-xs hover:bg-red-600 shadow-md">🗑️</button></div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-1">${recipe.title}</h3><p class="text-xs text-gray-500 mb-4 font-medium">⏱️ ${recipe.time} • 👤 ${recipe.servings}</p></div>
+                        <button onclick='window.openRecipeDetail(${JSON.stringify(recipe).replace(/'/g, "&apos;")}, "saved")' class="w-full bg-chef-green text-white font-bold py-3 rounded-2xl text-sm">Ver Modo de Preparo</button>`;
                     grid.appendChild(card);
                 });
             }
@@ -781,9 +1044,11 @@
                     window.updateSaveDetailBtnState(false);
                     window.showToast("Removido dos salvos!", "🗑️");
                 } else {
-                    window.saveRecipeToLocal(rec);
-                    window.updateSaveDetailBtnState(true);
-                    window.showToast("Receita salva!", "⭐");
+                    const didSave = window.saveRecipeToLocal(rec);
+                    if(didSave) {
+                        window.updateSaveDetailBtnState(true);
+                        window.showToast("Receita salva!", "⭐");
+                    }
                 }
             };
 
@@ -819,7 +1084,6 @@
                 window.showToast("Removido", "🗑️");
             } else {
                 window.saveRecipeToLocal(rec);
-                window.showToast("Salvo!", "⭐");
             }
             if(source === 'options') window.renderOptionsGrid(window.currentRecipesList);
         };
@@ -829,10 +1093,6 @@
             window.renderSavedRecipes();
             window.showToast("Receita deletada!", "🗑️");
         };
-
-        // INICIALIZAÇÃO
-        window.updateProfileUI();
-        window.updateSavedBadge();
 
     </script>
 </body>
