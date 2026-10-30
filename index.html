@@ -321,8 +321,8 @@
                 <h2 class="text-xl sm:text-2xl font-bold flex items-center gap-2 text-white">
                     <span>👑</span> Painel Admin
                 </h2>
-                <button onclick="window.showView('input')" class="text-sm font-bold hover:text-white transition-colors">
-                    [ Sair do Admin ]
+                <button onclick="window.showView('input')" class="text-sm font-bold hover:text-white transition-colors bg-purple-900/50 px-3 py-1.5 rounded-lg border border-purple-700">
+                    Sair do Admin
                 </button>
             </div>
 
@@ -331,7 +331,7 @@
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm flex flex-col justify-between">
                     <div>
                         <h3 class="text-white font-bold mb-2 text-sm">⚡ Modo Teste</h3>
-                        <p class="text-xs text-gray-400 mb-4">Gera receitas falsas na hora sem gastar cota da API.</p>
+                        <p class="text-xs text-gray-400 mb-4">Gera receitas na hora sem gastar a API.</p>
                     </div>
                     <button onclick="window.toggleMockMode()" id="mockModeBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-gray-600">
                         ⚪ DESATIVADO
@@ -342,10 +342,10 @@
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm flex flex-col justify-between">
                     <div>
                         <h3 class="text-white font-bold mb-2 text-sm">👥 Usuários</h3>
-                        <p class="text-xs text-gray-400 mb-4">Lista os e-mails de quem já se cadastrou aqui.</p>
+                        <p class="text-xs text-gray-400 mb-4">Veja as contas salvas na memória local.</p>
                     </div>
-                    <button onclick="window.viewAdminUsers()" class="bg-blue-700 hover:bg-blue-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-blue-500">
-                        Listar Cadastrados ↓
+                    <button onclick="window.viewAdminUsers()" class="bg-blue-700 hover:bg-blue-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-blue-500 shadow-md">
+                        Listar Usuários ↓
                     </button>
                 </div>
 
@@ -353,17 +353,23 @@
                 <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-sm flex flex-col justify-between">
                     <div>
                         <h3 class="text-white font-bold mb-2 text-sm">💡 Feedbacks</h3>
-                        <p class="text-xs text-gray-400 mb-4">Veja as mensagens deixadas na aba de ideias.</p>
+                        <p class="text-xs text-gray-400 mb-4">Mensagens recebidas na aba de ideias.</p>
                     </div>
-                    <button onclick="window.viewAdminFeedbacks()" class="bg-purple-700 hover:bg-purple-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-purple-500">
+                    <button onclick="window.viewAdminFeedbacks()" class="bg-purple-700 hover:bg-purple-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-purple-500 shadow-md">
                         Ler Mensagens ↓
                     </button>
                 </div>
             </div>
             
-            <div class="bg-black p-4 rounded-xl border border-gray-700 h-48 overflow-y-auto">
-                <h3 class="text-white font-bold mb-2 text-xs">LOG DO SERVIDOR ADMIN</h3>
-                <pre id="devLog" class="text-xs text-purple-300 whitespace-pre-wrap">Sistema Admin iniciado...</pre>
+            <!-- Visor de Resultados do Admin (Bonito e visual) -->
+            <div class="bg-black p-5 rounded-2xl border border-gray-700 h-64 overflow-y-auto">
+                <h3 class="text-white font-bold mb-4 text-xs tracking-widest text-center border-b border-gray-800 pb-2">VISOR DE DADOS ADMIN</h3>
+                
+                <div id="adminVisorContent" class="space-y-3">
+                    <div class="text-center text-gray-500 text-sm mt-8">
+                        Selecione um dos botões azuis ou roxos acima para exibir os dados aqui.
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -430,12 +436,33 @@
         // CHAVE DA INTELIGÊNCIA ARTIFICIAL (GEMINI)
         const GEMINI_API_KEY = "AQ.Ab8RN6LYaC0ZhWaUlf72iVsn4Pk87r5v2daFebg2Byysvud5iA";
 
-        // Estado Global
-        window.currentUserEmail = localStorage.getItem('chefe_user_email') || null;
-        window.isGuest = sessionStorage.getItem('chefe_guest') === 'true';
-        window.savedRecipesLocal = JSON.parse(localStorage.getItem('chefe_saved_recipes') || '[]'); 
-        window.feedbacksList = JSON.parse(localStorage.getItem('chefe_feedbacks') || '[]');
-        window.allUsersList = JSON.parse(localStorage.getItem('chefe_all_users') || '[]');
+        // ==========================================
+        // SISTEMA ANTI-TRAVAMENTO (MODO SEGURO)
+        // ==========================================
+        // Isso evita que navegadores de celular travem o site inteiro 
+        // caso o salvamento (cookies) esteja bloqueado.
+        function safeGet(key, defaultVal) {
+            try { return localStorage.getItem(key) || defaultVal; } catch(e) { return defaultVal; }
+        }
+        function safeSessionGet(key, defaultVal) {
+            try { return sessionStorage.getItem(key) || defaultVal; } catch(e) { return defaultVal; }
+        }
+        function safeSet(key, val) {
+            try { localStorage.setItem(key, val); } catch(e) {}
+        }
+        function safeRemove(key) {
+            try { localStorage.removeItem(key); } catch(e) {}
+        }
+        function safeSessionRemove(key) {
+            try { sessionStorage.removeItem(key); } catch(e) {}
+        }
+
+        // Estado Global com Escudo de Proteção
+        window.currentUserEmail = safeGet('chefe_user_email', null);
+        window.isGuest = safeSessionGet('chefe_guest', 'false') === 'true';
+        window.savedRecipesLocal = JSON.parse(safeGet('chefe_saved_recipes', '[]')); 
+        window.feedbacksList = JSON.parse(safeGet('chefe_feedbacks', '[]'));
+        window.allUsersList = JSON.parse(safeGet('chefe_all_users', '[]'));
         
         window.currentRecipesList = []; 
         window.selectedRecipe = null;
@@ -444,23 +471,14 @@
         window.currentImageMimeType = null;
         
         // Estado ADMIN / DEV
-        window.isDevMode = localStorage.getItem('chefe_is_dev') === 'true';
+        window.isDevMode = safeGet('chefe_is_dev', 'false') === 'true';
         window.mockMode = false;
         
-        window.devLog = (msg) => {
-            const logEl = document.getElementById('devLog');
-            if(logEl) {
-                logEl.innerHTML += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
-                logEl.scrollTop = logEl.scrollHeight;
-            }
-            console.log(`[ADMIN] ${msg}`);
-        };
-
         // ==========================================
         // 1. SISTEMA DE AUTENTICAÇÃO E INÍCIO
         // ==========================================
 
-        window.onload = () => {
+        const iniciarAplicativo = () => {
             if (window.currentUserEmail || window.isGuest) {
                 window.showView('input'); 
                 window.updateProfileUI();
@@ -470,8 +488,15 @@
             window.updateSavedBadge();
         };
 
+        // Garante que o site vai carregar independentemente da velocidade do celular
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', iniciarAplicativo);
+        } else {
+            iniciarAplicativo();
+        }
+
         window.enterGuestMode = () => {
-            sessionStorage.setItem('chefe_guest', 'true');
+            safeSet('chefe_guest', 'true');
             window.isGuest = true;
             window.showToast("Modo Visitante. Receitas não serão salvas.", "👀");
             window.updateProfileUI();
@@ -483,30 +508,31 @@
             const pass = document.getElementById(passInputId).value;
             if(!email) return window.showToast("Preencha um nome ou e-mail", "⚠️");
             
-            // BYPASS DO DONO DO SITE (Suas credenciais secretas: dev@chefe.com / admin)
+            // BYPASS DO DONO DO SITE
             if(email === 'dev@chefe.com' && pass === 'admin') {
                 window.isDevMode = true;
                 window.currentUserEmail = 'Proprietário (Admin)';
                 window.isGuest = false;
-                localStorage.setItem('chefe_is_dev', 'true');
-                localStorage.setItem('chefe_user_email', 'Proprietário (Admin)');
-                sessionStorage.removeItem('chefe_guest');
+                safeSet('chefe_is_dev', 'true');
+                safeSet('chefe_user_email', 'Proprietário (Admin)');
+                safeSessionRemove('chefe_guest');
                 window.updateProfileUI();
                 window.showToast("PAINEL ADMIN ATIVADO", "👑");
+                
+                document.getElementById('adminVisorContent').innerHTML = `<div class="text-center text-gray-500 text-sm mt-8">Selecione um dos botões azuis ou roxos acima para exibir os dados aqui.</div>`;
                 window.showView('dev');
                 return;
             }
 
-            // Login Comum Local
+            // Login Comum Local Seguro
             window.currentUserEmail = email;
             window.isGuest = false;
-            localStorage.setItem('chefe_user_email', email);
-            sessionStorage.removeItem('chefe_guest');
+            safeSet('chefe_user_email', email);
+            safeSessionRemove('chefe_guest');
             
-            // Salva o usuário no "Banco de Dados" Local para o Admin conseguir ver
             if(!window.allUsersList.includes(email)) {
                 window.allUsersList.push(email);
-                localStorage.setItem('chefe_all_users', JSON.stringify(window.allUsersList));
+                safeSet('chefe_all_users', JSON.stringify(window.allUsersList));
             }
 
             window.updateProfileUI();
@@ -521,9 +547,9 @@
             window.isDevMode = false;
             window.currentUserEmail = null;
             window.isGuest = false;
-            localStorage.removeItem('chefe_is_dev');
-            localStorage.removeItem('chefe_user_email');
-            sessionStorage.removeItem('chefe_guest');
+            safeRemove('chefe_is_dev');
+            safeRemove('chefe_user_email');
+            safeSessionRemove('chefe_guest');
             window.updateProfileUI();
             window.showToast("Você saiu do perfil.", "👋");
             window.showView('welcome');
@@ -564,53 +590,74 @@
             };
             
             window.feedbacksList.push(novoFeedback);
-            localStorage.setItem('chefe_feedbacks', JSON.stringify(window.feedbacksList));
+            safeSet('chefe_feedbacks', JSON.stringify(window.feedbacksList));
             
             textEl.value = '';
             window.showToast("Ideia enviada com sucesso!", "🚀");
             window.showView('input');
         };
         
-        // ADMIN - Ver Feedbacks
         window.viewAdminFeedbacks = () => {
+            const visor = document.getElementById('adminVisorContent');
             if(window.feedbacksList.length === 0) {
-                window.devLog("Nenhum feedback recebido ainda.");
+                visor.innerHTML = `<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center text-gray-400 text-sm">Nenhum feedback recebido ainda no seu site.</div>`;
                 return;
             }
-            window.devLog(`Carregando ${window.feedbacksList.length} feedbacks:`);
+            
+            let html = `<div class="text-white font-bold mb-3 flex items-center gap-2"><span class="bg-purple-600 px-2 rounded-lg text-sm">${window.feedbacksList.length}</span> Feedbacks recebidos:</div>`;
             window.feedbacksList.forEach((f, i) => {
-                window.devLog(`[#${i+1} - ${f.autor}] ${f.texto}`);
+                html += `
+                <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 mb-2 shadow-sm">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-purple-400">De: ${f.autor}</span>
+                        <span class="text-[10px] text-gray-500">${f.data}</span>
+                    </div>
+                    <p class="text-sm text-gray-200">"${f.texto}"</p>
+                </div>`;
             });
+            visor.innerHTML = html;
         };
 
-        // ADMIN - Ver Usuários
         window.viewAdminUsers = () => {
+            const visor = document.getElementById('adminVisorContent');
             if(window.allUsersList.length === 0) {
-                window.devLog("Nenhum usuário cadastrado no sistema local ainda.");
+                visor.innerHTML = `
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center text-gray-400 text-sm flex flex-col items-center">
+                    <span class="text-2xl mb-2">👻</span>
+                    Nenhum usuário criou conta ainda.<br><br>
+                    <span class="text-xs text-gray-500">Dica: Crie uma conta falsa você mesmo para testar.</span>
+                </div>`;
                 return;
             }
-            window.devLog(`Listando ${window.allUsersList.length} conta(s) registrada(s):`);
+            
+            let html = `<div class="text-white font-bold mb-3 flex items-center gap-2"><span class="bg-blue-600 px-2 rounded-lg text-sm">${window.allUsersList.length}</span> Contas Registradas:</div>`;
             window.allUsersList.forEach((email, i) => {
-                window.devLog(`[User #${i+1}] E-mail: ${email}`);
+                html += `
+                <div class="bg-gray-800 p-3 rounded-xl border border-gray-700 mb-2 shadow-sm flex items-center gap-3">
+                    <div class="bg-blue-900/50 text-blue-400 w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shrink-0 border border-blue-800/50">#${i+1}</div>
+                    <div class="text-sm text-gray-200 font-medium truncate">${email}</div>
+                </div>`;
             });
+            visor.innerHTML = html;
         };
 
         window.toggleMockMode = () => {
             window.mockMode = !window.mockMode;
             const btn = document.getElementById('mockModeBtn');
+            const visor = document.getElementById('adminVisorContent');
             if(window.mockMode) {
                 btn.className = "bg-green-600 hover:bg-green-500 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-green-400 shadow-[0_0_10px_rgba(34,197,94,0.5)]";
                 btn.textContent = "🟢 ATIVADO (Rápido)";
-                window.devLog("Modo Teste ATIVADO. Geração não gastará cota da API.");
+                visor.innerHTML = `<div class="bg-green-900/30 p-4 rounded-xl border border-green-800 text-center text-green-400 text-sm">⚡ Modo Teste Seguro ativado! Suas criações agora serão instantâneas e falsas para não gastar sua cota de IA.</div>`;
             } else {
                 btn.className = "bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded font-bold text-xs transition-all border border-gray-600";
                 btn.textContent = "⚪ DESATIVADO";
-                window.devLog("Modo Teste DESATIVADO.");
+                visor.innerHTML = `<div class="bg-gray-800 p-4 rounded-xl border border-gray-700 text-center text-gray-400 text-sm">Modo Teste Desativado. A Inteligência Artificial voltou ao normal.</div>`;
             }
         };
 
         // ==========================================
-        // 3. BANCO DE DADOS LOCAL (FAVORITOS)
+        // 3. BANCO DE DADOS LOCAL SEGURO
         // ==========================================
 
         window.saveRecipeToLocal = (recipe) => {
@@ -621,7 +668,7 @@
             
             if(!window.isRecipeSaved(recipe.title)) {
                 window.savedRecipesLocal.push(recipe);
-                localStorage.setItem('chefe_saved_recipes', JSON.stringify(window.savedRecipesLocal));
+                safeSet('chefe_saved_recipes', JSON.stringify(window.savedRecipesLocal));
                 window.updateSavedBadge();
                 return true;
             }
@@ -630,7 +677,7 @@
 
         window.removeRecipeFromLocal = (title) => {
             window.savedRecipesLocal = window.savedRecipesLocal.filter(r => r.title !== title);
-            localStorage.setItem('chefe_saved_recipes', JSON.stringify(window.savedRecipesLocal));
+            safeSet('chefe_saved_recipes', JSON.stringify(window.savedRecipesLocal));
             window.updateSavedBadge();
         };
 
